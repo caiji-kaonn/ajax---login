@@ -1,0 +1,140 @@
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Hero - Admin</title>
+  <link rel="stylesheet" href="/static/css/bootstrap.css">
+  <style>
+    .hero-list img {
+      width: 50px;
+      height: 50px;
+      display: block
+    }
+
+    .hero-list td {
+      height: 50px;
+      line-height: 50px;
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <div class="page-header container">
+      <h1>王者荣耀 <small>英雄管理器</small></h1>
+
+      <a href="javascript:void(0);" class="btn btn-exit btn-primary" hidden style='float:right;'>退出</a>
+      <a href="./login1.html" class="btn btn-login btn-success" style='float:right'>登录</a>
+    </div>
+  </header>
+  <div class="container hero-list">
+    <a class="btn btn-add btn-success pull-right" hidden href="./add.html">添加英雄</a>
+    <table class="table table-hover" hidden>
+      <thead>
+        <tr>
+          <th>编号</th>
+          <th>名称</th>
+          <th>性别</th>
+          <th>头像</th>
+          <th>操作</th>
+        </tr>
+      </thead>
+      <tbody id="tbody">
+        <!-- <tr>
+          <td>1</td>
+          <td>狗蛋</td>
+          <td>男</td>
+          <td><img src="../static/images/0.jpg"></td>
+          <td><a href="./edit.html?id=1">修改</a> 
+            <a data-id="1" href="javscript:void(0);">删除</a>
+          </td>
+        </tr> -->
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal fade" id="modelId" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">提示</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="container-fluid">
+            你确定要删除吗？
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+          <button type="button" class="btn btn-primary btn-sure-del" data-id="null">确定</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</body>
+<!-- 这里写添加到ajax的html结构 -->
+<script type="text/template" id="tp">
+  <% for(var i=0;i<$data.length;i++){ %>
+<tr>
+          <td><%=$data.[i].id%></td>
+          <td><%=$data.[i].name%></td>
+          <td><%=$data.[i].gender%></td>
+          <td><img src="/static/images/<%=$data.[i].img%>"></td>
+          <td><a href="/edit.html?id=1">修改</a> 
+            <a data-id="1" href="javscript:void(0);">删除</a>
+          </td>
+        </tr>
+<%}%>
+</script>
+<script src="/static/js/jquery.js"></script>
+<script src="/static/js/ajax.js"></script>
+<script src="/static/js/template-web.js"></script>
+<script>
+  // 实现页面登录成功之后，跳转到当前页面--》需要ajax在服务器进行验证-验证是否登录-把保存到本地的数据拿出来在服务器里进行验证
+  // 把该显示的数据显示出来，该数据隐藏的就隐藏起来
+  let useId = localStorage.getItem('userId');
+  // 这个是再再确认一下当前页面是否登录
+  if (!useId) {
+    alert('不好意思，请再次登录一下啊');
+    location.href = './login1.html'
+  } else {
+    ajax({
+      url: 'http://127.0.0.1:8080/isLogin',
+      data: 'id=' + useId,
+      callback: function (res) {
+        res = JSON.parse(res);
+        if (res.code === 200) {
+          // 把登录按钮隐藏
+          $('.page-header a:last-child').attr('hidden', true);
+          // 把退出按钮显示
+          $('.page-header a:nth-child(2), .hero-list a:first-child,table').removeAttr('hidden');
+          // 接下来向服务器拿图片数据
+          ajax({
+            type: 'post',
+            url: 'http://127.0.0.1:8080/getAllHero',
+            callback: function (res) {
+              res = JSON.parse(res);
+              // console.log(res)
+              if (res.code === 200) {
+                let html = template('tp', res.data);
+                $('#tbody').html(html)
+              }
+            }
+          })
+        } else {
+          alert('你还没登录噢，请先登录');
+          location.href = './login1.html';
+        }
+      }
+    })
+    // 入口函数？？
+
+  }
+</script>
+
+</html>

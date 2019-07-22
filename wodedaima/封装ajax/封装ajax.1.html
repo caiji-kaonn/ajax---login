@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+</head>
+
+<body>
+    <form action="" enctype="application/x-www-form-urlencoded"></form>
+</body>
+<script>
+    function ajax(options) {
+        options = options || {};
+        options.type = options.type || 'get';
+        options.url = options.url || '';
+        options.data = options.data || '';
+        options.callback = options.callback || function (res) {
+            callback(res);
+        }
+        let xhr = new XMLDocument();
+        if (options.type === 'get') {
+            options.url += '?' + options.data;
+        }
+        if (options.type === 'post') {
+            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+            xhr.send(options.data);
+        } else {
+            xhr.send();
+        }
+        xhr.open(options.type, options.url);
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                options.callback(xhr.respresponseText)
+            }
+        }
+    }
+</script>
+
+
+</html>

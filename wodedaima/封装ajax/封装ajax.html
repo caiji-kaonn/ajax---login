@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+</head>
+
+<body>
+    <form action="" enctype="application/x-www-form-urlencoded"></form>
+</body>
+<script>
+    function ajax(options) {
+        // 设置默认值
+        options = options || {};
+        options.type = options.type || 'get';
+        options.url = options.url || '';
+        options.data = options.data ||
+            options.callback = options.callback || function (res) {
+                console.log(res);
+            }
+        let xhr = new XMLHttpRequest();
+        // 判断get
+        if (options.type === 'get') {
+            options.url += '?' + options.data;
+        }
+        xhr.open(options.type, url);
+        // 判断post-头
+        if (options.type === 'post') {
+            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+            xhr.send(options.data)
+        } else {
+            xhr.send();
+        }
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                options.callback(xhr.responseText);
+            }
+        }
+    }
+</script>
+
+</html>
